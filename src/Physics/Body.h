@@ -23,6 +23,8 @@ struct Body {
 	float I; // moment of inertia
 	float invI;
 
+	float restitution;
+
 	std::shared_ptr<Shape> shape;
 
 	Body(float x, float y, float mass, std::shared_ptr<Shape> shape);

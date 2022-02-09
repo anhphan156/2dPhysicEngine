@@ -19,6 +19,8 @@ Body::Body(float x, float y, float mass, std::shared_ptr<Shape> shape){
 
 	this->invMass = mass != 0.f ? 1 / mass : 0.f;
 	this->invI = I != 0.f ? 1 / I : 0.f;
+
+	this->restitution = .5f;
 }
 
 Body::~Body(){

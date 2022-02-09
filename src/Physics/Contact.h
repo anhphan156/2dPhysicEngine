@@ -17,6 +17,7 @@ struct Contact{
 	float depth;
 
 	void ResolvePenetration();
+	void ResolveCollision();
 };
 
 #endif

@@ -97,7 +97,7 @@ void Application::Update() {
 				if((*itt)->shape->GetShape() != CIRCLE) continue;
 				Contact contact;		
 				if(CollisionDetection::CollisionDetectionCircleCircle(body, *itt, contact)){
-					contact.ResolvePenetration();
+					contact.ResolveCollision();
 				}
 			}
 
