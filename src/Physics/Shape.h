@@ -1,5 +1,6 @@
 #ifndef SHAPE_H
 #define SHAPE_H
+#include <memory>
 #include <vector>
 
 enum ShapeType {
@@ -34,6 +35,8 @@ struct Polygon : public Shape {
 	~Polygon() = default;
 
 	void UpdateVertices(float angle, Vec2 position);
+	Vec2 EdgeAt(unsigned int index) const;
+	float FindMinSeparation(const std::shared_ptr<Polygon> other, Vec2& OUT_axis, Vec2& OUT_point) const;
 };
 
 struct Box : public Polygon {

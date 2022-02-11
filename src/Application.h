@@ -15,6 +15,9 @@ class Application {
 
 		Vec2 liquid;
 
+		std::shared_ptr<class Body> bodyAtMouse;
+		std::shared_ptr<class Body> testBody;
+
     public:
         Application() = default;
         ~Application() = default;

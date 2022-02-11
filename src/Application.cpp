@@ -22,7 +22,14 @@ void Application::Setup() {
     // TODO: setup objects in the scene
 	bodies.push_back(std::make_shared<Body>(800.f, 500.f, 0.f, std::make_shared<Circle>(250.f)));
 	bodies.push_back(std::make_shared<Body>(90.f, 50.f, 1.f, std::make_shared<Circle>(10.f)));
-	bodies.push_back(std::make_shared<Body>(200.f, 50.f, 2.f, std::make_shared<Box>(100.f, 70.f)));
+
+	//bodies.push_back(std::make_shared<Body>(200.f, 50.f, 2.f, std::make_shared<Box>(100.f, 70.f)));
+	testBody = (std::make_shared<Body>(400.f, 100.f, 0.f, std::make_shared<Box>(100.f, 70.f)));
+	testBody->rotation = 3.14f / 4.f;
+
+	bodyAtMouse = std::make_shared<Body>(200.f, 50.f, 0.f, std::make_shared<Box>(100.f, 70.f));
+	bodies.push_back(bodyAtMouse);
+	bodies.push_back(testBody);
 
 	//springBody = new Body(280.f, 50.f, 5.5f, 15.f);
 
@@ -52,6 +59,9 @@ void Application::Input() {
 					bodies.push_back(std::make_shared<Body>(event.button.x, event.button.y, 1.f, std::make_shared<Circle>(10.f)));
 				}
 				break;
+			case SDL_MOUSEMOTION:
+				bodyAtMouse->position = Vec2(event.button.x, event.button.y);
+				break;
         }
     }
 }
@@ -71,10 +81,21 @@ void Application::Update() {
 	}
 
 	timePreviousFrame = SDL_GetTicks();
+	Graphics::ClearScreen(0xFF056263);
 
 	//for(const auto& body : bodies){
 	for(auto it = bodies.begin(); it != bodies.end(); ++it){
 		const auto& body = *it;
+
+		for(auto itt = it + 1; itt != bodies.end(); ++itt){
+			Contact contact;		
+			if(CollisionDetection::CollisionDetection(body, *itt, contact)){
+				//contact.ResolveCollision();
+				//Graphics::DrawFillCircle(contact.start.x, contact.start.y, 3.f, 0xFFFFFFFF);
+				//Graphics::DrawFillCircle(contact.end.x, contact.end.y, 3.f, 0xFF0000FF);
+			}
+		}
+
 		if(body->shape->GetShape() == CIRCLE){
 
 			const auto circle = std::static_pointer_cast<Circle>(body->shape);
@@ -85,21 +106,13 @@ void Application::Update() {
 			if(body->position.y >= liquid.y)
 				body->AddForce(Force::GenerateDragForce(*body, .02f));
 			//else
-				//body->AddForce(Vec2(10.f, 0.f) * PIXEL_PER_METER);
+			//body->AddForce(Vec2(10.f, 0.f) * PIXEL_PER_METER);
 
 			// Adding torque
 			body->AddTorque(200.f);
 
 			// Integration
 			body->BodyUpdate(deltaTime);
-
-			for(auto itt = it + 1; itt != bodies.end(); ++itt){
-				if((*itt)->shape->GetShape() != CIRCLE) continue;
-				Contact contact;		
-				if(CollisionDetection::CollisionDetectionCircleCircle(body, *itt, contact)){
-					contact.ResolveCollision();
-				}
-			}
 
 			// Window bounding
 			if(body->position.y + circle->radius > Graphics::Height() - 30.f){
@@ -126,7 +139,7 @@ void Application::Update() {
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
-    Graphics::ClearScreen(0xFF056263);
+    //Graphics::ClearScreen(0xFF056263);
 
 	for(const auto& body : bodies){
 		if(body->shape->GetShape() == CIRCLE){
@@ -137,6 +150,11 @@ void Application::Render() {
 			Graphics::DrawPolygon(body->position.x, body->position.y, box->worldVertices, 0xFFFFFFFF);
 		}
 	}
+
+	//const auto a = std::static_pointer_cast<Polygon>(testBody->shape);
+	//const auto ae = a->EdgeAt(0).Normal() + a->worldVertices[0];
+	//Graphics::DrawLine(ae.x, ae.y, (ae+a->EdgeAt(0).Normal()).x, (ae+a->EdgeAt(0).Normal()).y, 0x00FF00FF);
+
 	Graphics::DrawFillRect(liquid.x + Graphics::Width() / 2, liquid.y + Graphics::Height() * 35 / 100, Graphics::Width(),  Graphics::Height() * 70/100, 0x6A78FDFF);
 
 
